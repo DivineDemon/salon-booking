@@ -14,7 +14,8 @@ export const MessageList = ({ messages }: MessageListProps) => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [scrollToBottom]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messages]);
 
   if (messages.length === 0) {
     return (

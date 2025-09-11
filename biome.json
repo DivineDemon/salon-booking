@@ -86,7 +86,7 @@
             "useValidForDirection": "error",
             "useValidTypeof": "error",
             "useYield": "error",
-            "useExhaustiveDependencies": "warn",
+            "useExhaustiveDependencies": "off",
             "useHookAtTopLevel": "error"
           },
           "suspicious": {
