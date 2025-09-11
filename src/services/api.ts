@@ -44,6 +44,14 @@ export class ChatAPI {
                 message: firstResult.output,
               },
             };
+          } else if (firstResult.output === "" || firstResult.output === null || firstResult.output === undefined) {
+            return {
+              output: {
+                is_pass_next: true,
+                message:
+                  "Your booking has been finalized successfully, please find the booking details in your inbox shortly.",
+              },
+            };
           }
         }
 
