@@ -1,0 +1,563 @@
+{
+  "name": "Salon Booking",
+  "nodes": [
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4",
+          "mode": "list",
+          "cachedResultName": "gpt-4"
+        },
+        "options": {}
+      },
+      "id": "bc908d07-2e53-447a-8ee5-525fd0f679be",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [1584, 656],
+      "typeVersion": 1.2,
+      "credentials": {
+        "openAiApi": {
+          "id": "kNGsJx3WivzISRge",
+          "name": "OpenAi account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "c8fbdff7-9cb4-426e-97bc-5c4f0f22fe70",
+      "name": "Auto-fixing Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserAutofixing",
+      "position": [1856, 656],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "chatgpt-4o-latest",
+          "mode": "list",
+          "cachedResultName": "chatgpt-4o-latest"
+        },
+        "options": {}
+      },
+      "id": "0d5c4abe-d5b6-4f21-a417-b0cf8eeb4050",
+      "name": "OpenAI Chat Model1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [1840, 864],
+      "typeVersion": 1.2,
+      "credentials": {
+        "openAiApi": {
+          "id": "kNGsJx3WivzISRge",
+          "name": "OpenAi account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n\t\"is_pass_next\": \"boolean\",\n\t\"message\": \"string\"\n}"
+      },
+      "id": "b74d7871-a069-4eb8-ae37-acb8202fa2a1",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "position": [2000, 864],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "version": 2,
+                  "leftValue": "",
+                  "caseSensitive": true,
+                  "typeValidation": "strict"
+                },
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "id": "b27f50ed-f26d-4310-b049-f0b38ca069f6",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    },
+                    "leftValue": "={{ $json.output.is_pass_next }}",
+                    "rightValue": ""
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "Booking"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "version": 2,
+                  "leftValue": "",
+                  "caseSensitive": true,
+                  "typeValidation": "strict"
+                },
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "id": "ca6f2ea1-9dd1-4e77-9935-c3dbeb872ee4",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "false",
+                      "singleValue": true
+                    },
+                    "leftValue": "={{ $json.output.is_pass_next }}",
+                    "rightValue": ""
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "Feedback"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "78c72828-8122-493c-975a-1484558b757f",
+      "name": "Switch",
+      "type": "n8n-nodes-base.switch",
+      "position": [2224, 528],
+      "typeVersion": 3.2
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are the Booking Agent for Glow & Grace Salon – Where Beauty Meets Elegance.\n\nYour job is to take finalized booking details from the Salon Agent, and:\n\nGenerate a Google Calendar event object with proper start and end time.\n\nInput from Restaurant Agent:  {{ $('Edit Fields').item.json['user_data'] }}\n\nyou have to generate the email using the below all information that i share with you below:\n\nInformation for the email:\n\n customer name :{{ $('Respond to Webhook1').item.json.output.customer_name }}\ncontact number:{{ $('Respond to Webhook1').item.json.output.phone }}\nAppointment_date:{{ $('Respond to Webhook1').item.json.output.appointment_date }}\nAppointment_time:{{ $('Respond to Webhook1').item.json.output.appointment_time }}\nservice type:{{ $('Respond to Webhook1').item.json.output.service_type }}\nhair style:{{ $('Respond to Webhook1').item.json.output.preferred_stylist }}\nspeical note:{{ $('Respond to Webhook1').item.json.output.special_notes }}\n🧠 Behavior Notes:\n\nDefault service durations (unless specified):\n\nHaircut: 1 hour\n\nHair Color: 2 hours\n\nBlowout/Styling: 1 hour\n\nManicure/Pedicure: 1.5 hours\n\nFacial: 1 hour\n\nMassage: 1.5 hours\n\n\nTime zone is assumed to be the Salon’s local time: {{ $now }}\n\nYou have to trigger the gmail sent mail as well as google clander tool also make sure that you excute both tools.",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "id": "e6a7e569-9e78-4d8b-b9a5-20a530da7d9a",
+      "name": "Booking Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [2952, 432],
+      "typeVersion": 1.8
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4",
+          "mode": "list",
+          "cachedResultName": "gpt-4"
+        },
+        "options": {}
+      },
+      "id": "7971d432-b27d-4747-877e-3b5ad945a937",
+      "name": "OpenAI Chat Model2",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [2848, 656],
+      "typeVersion": 1.2,
+      "credentials": {
+        "openAiApi": {
+          "id": "kNGsJx3WivzISRge",
+          "name": "OpenAi account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.body.message }}",
+        "contextWindowLength": 15
+      },
+      "id": "a7987e7e-cb39-41ab-84e5-eec23ae3f786",
+      "name": "Simple Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "position": [1728, 656],
+      "typeVersion": 1.3
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.message }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are the Salon Reservation Agent for Glow & Grace Salon – Premium Hair & Beauty Services.\n\nYour role is to assist users in booking a salon appointment, starting with gathering their information, confirming the booking, and ensuring it’s added to the calendar and an email is sent.\n\nUser Input: {{ $json.body.message }}\n\nTone and Behavior\n- Warm, polite, and professional — like a friendly salon receptionist.\n- Make the client feel cared for and pampered.\n- Always move step by step — never jump ahead.\n- Never suggest random services or times — always confirm with the user.\n\nFLOW STRUCTURE:\n\n1. FIRST INTERACTION (Warm Greeting)\nAlways start with a polite opening and ask how you can help.\n\n{\n  \"is_pass_next\": false,\n  \"message\": \"Welcome to Glow & Grace Salon! Your beauty, our passion. How may I assist you today? Would you like to book an appointment?\"\n}\n\n2. APPOINTMENT DETAILS (Step by Step Questions)\nAsk one question at a time in sequence:\n- Service Type (Haircut, Hair Spa, Facial, Manicure, Pedicure, Makeup, etc.)\n- Preferred Stylist/Therapist (if any)\n- Preferred Date & Time\n- Special Requests (bridal prep, event styling, sensitive skin, etc.)\n\nExample response if still collecting info:\n\n{\n  \"is_pass_next\": false,\n  \"message\": \"Got it! Which service would you like to book — for example haircut, facial, manicure, or something else?\"\n}\n\n3. PRE-CONFIRMATION: Reservation Draft\nOnce enough details are gathered, propose a draft for review.\n\n{\n  \"is_pass_next\": false,\n  \"message\": \"Here’s your appointment draft 💆‍♀️:\\n\\n🗓 Date & Time: [Insert Date & Time]\\n💇‍♀️ Service: [Service Type]\\n✨ Preferred Stylist: [If any]\\n🎀 Special Notes: [If any]\\n📍 Location: Glow & Grace Salon, 21 Beauty Avenue, Style City\\n\\nShall we finalize this?\"\n}\n\n4. GATHER PERSONAL DETAILS (After Confirmation)\nOnly after the user confirms the reservation draft, ask for full name, email, and phone number.\n\n{\n  \"is_pass_next\": false,\n  \"message\": \"Perfect! To complete your reservation, may I have your full name, email, and an optional contact number?\"\n}\n\n5. FINAL CONFIRMATION & PASS TO SYSTEM\nOnce user provides all details, finalize the booking. The **output must include `\"is_pass_next\": true` inside the `output` object** along with all customer information:\n\n{\n  \"is_pass_next\": true,\n  \"customer_name\": \"[Name]\",\n  \"email\": \"[Email]\",\n  \"phone\": \"[Phone Number]\",\n  \"appointment_date\": \"[YYYY-MM-DD]\",\n  \"appointment_time\": \"[Time]\",\n  \"service_type\": \"[Haircut/Facial/etc.]\",\n  \"preferred_stylist\": \"[If any]\",\n  \"special_notes\": \"[Any notes from user]\"\n}\n\nEnsure that the **final JSON is valid**.\n\nTime zone is assumed to be the Salon's local time: {{ $now }}\n"
+        }
+      },
+      "id": "c493c29f-c237-4fe5-a925-d67cd55fd00f",
+      "name": "Information Gathering Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [1656, 432],
+      "typeVersion": 1.8
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "1306a6cb-608a-471a-a84b-f07f981c67da",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "ae393cac-abb4-4c21-960f-4b62bae00c0c",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "position": [1376, 432],
+      "webhookId": "1306a6cb-608a-471a-a84b-f07f981c67da",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $('Information Gathering Agent').item.json.output.message }}",
+        "options": {}
+      },
+      "id": "6b46ac46-35c6-498c-9bf7-f6d389b71b7a",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [2448, 624],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "Thank you for your confirmation! We have noted down your information. You will be getting confirmation mail soon. ",
+        "options": {}
+      },
+      "id": "c41f6fe8-f96d-4083-93d2-6f9180b024bb",
+      "name": "Respond to Webhook1",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [2448, 432],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"result\":[\n    {\n      \"is_pass_next\": {{ $json.is_pass_next }},\n      \"output\": \"{{ $json.output }}\"\n    }\n  ]\n}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "37e4369f-819d-4515-8070-c28feab8549c",
+      "name": "Respond to Webhook2",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [2448, 240],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.all();\n\nreturn data.map(item => {\n  let outputText = \"\";\n  let isPassNext = false;\n  \n  if (typeof item.json.output === \"string\") {\n    outputText = item.json.output;\n  } else if (typeof item.json.output === \"object\" && item.json.output !== null) {\n    outputText = item.json.output.message || \"\";\n    isPassNext = item.json.output.is_pass_next || false;\n  }\n  \n  return {\n    is_pass_next: isPassNext,\n    output: outputText\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2224, 240],
+      "id": "cd575205-6e20-4b19-a002-afbd985d296e",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Respond to Webhook1').item.json.output.email }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [3024, 656],
+      "id": "8ab0b2d2-da4f-442b-82e4-5f4f3e7cff3b",
+      "name": "Send a message in Gmail",
+      "webhookId": "5b3b5b32-9645-4cf5-9672-1ee2cd14e5e6",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "NwoSfU2tw73tGKNq",
+          "name": "Gmail account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "digimark.dev1@gmail.com",
+          "mode": "list",
+          "cachedResultName": "digimark.dev1@gmail.com"
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [3184, 656],
+      "id": "1d5ec289-8ea8-42e5-bdb2-c67ed90dfd93",
+      "name": "Create an event in Google Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "RpjVVy4OeGDqNdUV",
+          "name": "Google Calendar account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"result\": [\n    {\n      \"output\": \"Your booking is confirmed! Thank you for choosing Glow & Grace Salon. We look forward to pampering you.\"\n    }\n  ]\n}\n",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "ae298959-735d-4fc4-a7ac-1b633169d39f",
+      "name": "Respond to Webhook3",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [3360, 432],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "34357e62-87db-4d9c-a4ac-b8008c944821",
+              "name": "user_data",
+              "type": "string",
+              "value": "={{$('Switch').item.json.output}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "998fdb13-017b-4b89-843b-db2ce2090f8c",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "position": [2672, 432],
+      "typeVersion": 3.4
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n.scintia.ai",
+            "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Mobile Safari/537.36",
+            "content-length": "252",
+            "accept": "*/*",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "en-US,en;q=0.9,ar-OM;q=0.8,ar;q=0.7",
+            "content-type": "application/json",
+            "origin": "https://salon-booking-eta.vercel.app",
+            "priority": "u=1, i",
+            "referer": "https://salon-booking-eta.vercel.app/",
+            "sec-ch-ua": "\"Chromium\";v=\"140\", \"Not=A?Brand\";v=\"24\", \"Google Chrome\";v=\"140\"",
+            "sec-ch-ua-mobile": "?1",
+            "sec-ch-ua-platform": "\"Android\"",
+            "sec-fetch-dest": "empty",
+            "sec-fetch-mode": "cors",
+            "sec-fetch-site": "cross-site",
+            "x-forwarded-for": "172.18.0.1",
+            "x-forwarded-host": "n8n.scintia.ai",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "081a3b453551",
+            "x-real-ip": "172.18.0.1"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "message": "I would like to book a haircut appointment with Matt as my haircut specialist for 12th September 2025 at 03:00PM. I have no special requests. My contact information is: Name: Mushood Hanif, Email: supame123@gmail.com, Phone: +923268860405"
+          },
+          "webhookUrl": "https://n8n.scintia.ai/webhook/1306a6cb-608a-471a-a84b-f07f981c67da",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Information Gathering Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Booking Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Information Gathering Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Gathering Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Auto-fixing Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Booking Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Auto-fixing Output Parser",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auto-fixing Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Information Gathering Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Gathering Agent": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "Booking Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an event in Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "Booking Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Booking Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "07d04bb4-e518-488b-a8c5-33ff99eaba3f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e8602a2877aad0da393b7e3915bb82d156761f0aa04481727401b02c52216453"
+  },
+  "id": "rhTvbXd2foiwFsa8",
+  "tags": []
+}
