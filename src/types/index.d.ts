@@ -15,6 +15,13 @@ declare type N8nWebhookResponse = {
     is_pass_next: boolean;
     message: string;
   };
+}[];
+
+declare type N8nWebhookResponseItem = {
+  output: {
+    is_pass_next: boolean;
+    message: string;
+  };
 };
 
 declare type ChatState = {

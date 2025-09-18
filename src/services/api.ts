@@ -5,7 +5,7 @@ export class ChatAPI {
     url: string,
     data: N8nWebhookRequest,
     timeout: number = API_CONFIG.REQUEST_TIMEOUT,
-  ): Promise<N8nWebhookResponse> {
+  ): Promise<N8nWebhookResponseItem> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
@@ -35,6 +35,15 @@ export class ChatAPI {
       try {
         const result = JSON.parse(responseText);
 
+        // Handle the new array format: [{"output": {"is_pass_next": false, "message": "..."}}]
+        if (Array.isArray(result) && result.length > 0) {
+          const firstItem = result[0];
+          if (firstItem.output && typeof firstItem.output.message === "string") {
+            return firstItem;
+          }
+        }
+
+        // Handle legacy formats for backward compatibility
         if (result.result && Array.isArray(result.result) && result.result.length > 0) {
           const firstResult = result.result[0];
           if (firstResult.output && typeof firstResult.output === "string") {
@@ -96,7 +105,7 @@ export class ChatAPI {
     }
   }
 
-  static async sendMessage(message: string): Promise<N8nWebhookResponse> {
+  static async sendMessage(message: string): Promise<N8nWebhookResponseItem> {
     const requestData: N8nWebhookRequest = {
       message: message.trim(),
     };
