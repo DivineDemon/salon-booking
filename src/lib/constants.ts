@@ -1,4 +1,6 @@
 export const API_CONFIG = {
   WEBHOOK_URL: import.meta.env.VITE_BASE_WEBHOOK_URL,
-  REQUEST_TIMEOUT: 10000,
+  REQUEST_TIMEOUT: 30000,
+  MAX_RETRIES: 2,
+  RETRY_DELAY: 1000,
 } as const;

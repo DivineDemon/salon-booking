@@ -50,7 +50,7 @@ export const useChat = () => {
 
       addMessage(content, "user");
 
-      const typingId = addMessage("", "bot", true);
+      const typingId = addMessage("Processing your request...", "bot", true);
 
       setChatState((prev) => ({
         ...prev,
@@ -58,9 +58,14 @@ export const useChat = () => {
         error: null,
       }));
 
+      const timeoutWarning = setTimeout(() => {
+        updateMessage(typingId, "This is taking longer than usual... Please wait while we process your request.", true);
+      }, 15000);
+
       try {
         const response = await ChatAPI.sendMessage(content);
 
+        clearTimeout(timeoutWarning);
         removeTypingIndicator(typingId);
         addMessage(response.output.message, "bot");
 
@@ -70,6 +75,7 @@ export const useChat = () => {
           isConnected: true,
         }));
       } catch (error) {
+        clearTimeout(timeoutWarning);
         removeTypingIndicator(typingId);
 
         const errorMessage = error instanceof Error ? error.message : "Failed to send message";
@@ -83,6 +89,7 @@ export const useChat = () => {
         }));
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [addMessage, removeTypingIndicator],
   );
 

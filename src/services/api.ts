@@ -1,10 +1,15 @@
 import { API_CONFIG } from "@/lib/constants";
 
 export class ChatAPI {
+  private static async sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
   private static async makeRequest(
     url: string,
     data: N8nWebhookRequest,
     timeout: number = API_CONFIG.REQUEST_TIMEOUT,
+    retryCount: number = 0,
   ): Promise<N8nWebhookResponseItem> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -35,7 +40,6 @@ export class ChatAPI {
       try {
         const result = JSON.parse(responseText);
 
-        // Handle the new array format: [{"output": {"is_pass_next": false, "message": "..."}}]
         if (Array.isArray(result) && result.length > 0) {
           const firstItem = result[0];
           if (firstItem.output && typeof firstItem.output.message === "string") {
@@ -43,7 +47,6 @@ export class ChatAPI {
           }
         }
 
-        // Handle legacy formats for backward compatibility
         if (result.result && Array.isArray(result.result) && result.result.length > 0) {
           const firstResult = result.result[0];
           if (firstResult.output && typeof firstResult.output === "string") {
@@ -96,8 +99,23 @@ export class ChatAPI {
 
       if (error instanceof Error) {
         if (error.name === "AbortError") {
-          throw new Error("Request timeout - please try again");
+          if (retryCount < API_CONFIG.MAX_RETRIES) {
+            await this.sleep(API_CONFIG.RETRY_DELAY * (retryCount + 1));
+            return this.makeRequest(url, data, timeout, retryCount + 1);
+          }
+          throw new Error(
+            "Request is taking longer than expected. The booking system might be processing your request - please wait a moment and try again if needed.",
+          );
         }
+
+        if (
+          retryCount < API_CONFIG.MAX_RETRIES &&
+          (error.message.includes("Network error") || error.message.includes("HTTP error"))
+        ) {
+          await this.sleep(API_CONFIG.RETRY_DELAY * (retryCount + 1));
+          return this.makeRequest(url, data, timeout, retryCount + 1);
+        }
+
         throw new Error(`Network error: ${error.message}`);
       }
 
