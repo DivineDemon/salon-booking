@@ -1,6 +1,8 @@
 import { API_CONFIG } from "@/lib/constants";
 
 export class ChatAPI {
+  private static sessionId: string = crypto.randomUUID();
+
   private static async sleep(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
@@ -20,7 +22,11 @@ export class ChatAPI {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          message: data.message,
+          current_date: new Date(),
+          session_id: this.sessionId,
+        }),
         signal: controller.signal,
       });
 
