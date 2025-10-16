@@ -1,5 +1,5 @@
 import { Loader2, Send } from "lucide-react";
-import { type KeyboardEvent, useState } from "react";
+import { type KeyboardEvent, useEffect, useRef, useState } from "react";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
 
@@ -10,6 +10,13 @@ interface MessageInputProps {
 
 export const MessageInput = ({ onSendMessage, isLoading }: MessageInputProps) => {
   const [message, setMessage] = useState("");
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (!isLoading && textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  }, [isLoading]);
 
   const handleSubmit = () => {
     if (message.trim() && !isLoading) {
@@ -30,6 +37,7 @@ export const MessageInput = ({ onSendMessage, isLoading }: MessageInputProps) =>
       <div className="flex items-end gap-3">
         <div className="relative flex-1">
           <Textarea
+            ref={textareaRef}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyPress={handleKeyPress}
