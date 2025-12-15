@@ -30,7 +30,7 @@ export const MessageList = ({ messages }: MessageListProps) => {
   }
 
   return (
-    <div className="h-[calc(100vh-186px)] flex-1 space-y-2 overflow-y-auto p-4">
+    <div className="h-[calc(100vh-186px)] flex-1 space-y-2 overflow-y-auto p-4 no-scrollbar">
       {messages.map((message) => (
         <MessageBubble key={message.id} message={message} />
       ))}

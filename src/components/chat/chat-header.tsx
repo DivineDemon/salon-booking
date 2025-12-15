@@ -9,14 +9,14 @@ interface ChatHeaderProps {
 
 export const ChatHeader = ({ isConnected, onClearChat, onTestConnection }: ChatHeaderProps) => {
   return (
-    <div className="border-b bg-primary p-4 text-primary-foreground">
+    <div className="border-b bg-gradient-to-b from-gray-800 to-green-300 p-4 text-primary-foreground">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-foreground/20">
             <span className="text-2xl">💇‍♀️</span>
           </div>
           <div>
-            <h1 className="font-semibold text-lg">Glow & Grace Salon</h1>
+            <h1 className="font-semibold text-lg">Glam-Mate Salon</h1>
             <div className="flex items-center gap-2 text-sm">
               {isConnected ? (
                 <>
