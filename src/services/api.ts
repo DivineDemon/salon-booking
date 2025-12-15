@@ -26,6 +26,7 @@ export class ChatAPI {
           message: data.message,
           current_date: new Date(),
           session_id: this.sessionId,
+          business_id: API_CONFIG.BUSINESS_ID,
         }),
         signal: controller.signal,
       });

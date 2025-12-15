@@ -3,4 +3,5 @@ export const API_CONFIG = {
   REQUEST_TIMEOUT: 30000,
   MAX_RETRIES: 2,
   RETRY_DELAY: 1000,
+  BUSINESS_ID: import.meta.env.VITE_BUSINESS_ID || "d79ae0b7-b5b6-4422-9c8c-269e20269c26",
 } as const;
