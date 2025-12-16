@@ -1,7 +1,7 @@
 import { Loader2, Send } from "lucide-react";
 import { type KeyboardEvent, useEffect, useRef, useState } from "react";
 import { Button } from "../ui/button";
-import { Textarea } from "../ui/textarea";
+import { Input } from "../ui/input";
 
 interface MessageInputProps {
   onSendMessage: (message: string) => void;
@@ -10,11 +10,11 @@ interface MessageInputProps {
 
 export const MessageInput = ({ onSendMessage, isLoading }: MessageInputProps) => {
   const [message, setMessage] = useState("");
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (!isLoading && textareaRef.current) {
-      textareaRef.current.focus();
+    if (!isLoading && inputRef.current) {
+      inputRef.current.focus();
     }
   }, [isLoading]);
 
@@ -25,37 +25,34 @@ export const MessageInput = ({ onSendMessage, isLoading }: MessageInputProps) =>
     }
   };
 
-  const handleKeyPress = (e: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+  const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
       e.preventDefault();
       handleSubmit();
     }
   };
 
   return (
-    <div className="border-t bg-background p-4">
-      <div className="flex items-end gap-3">
-        <div className="relative flex-1">
-          <Textarea
-            ref={textareaRef}
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Type your message here..."
-            disabled={isLoading}
-            className="resize-none pr-12"
-            rows={1}
-            style={{
-              minHeight: "48px",
-              maxHeight: "120px",
-            }}
-            onInput={(e) => {
-              const target = e.target as HTMLTextAreaElement;
-              target.style.height = "auto";
-              target.style.height = `${Math.min(target.scrollHeight, 120)}px`;
-            }}
-          />
-        </div>
+    <div className="bg-muted px-4 py-3">
+      <div className="flex items-center gap-3">
+        <Input
+          ref={inputRef}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={handleKeyPress}
+          placeholder="Type your message..."
+          disabled={isLoading}
+          className="
+            h-12
+            rounded-full
+            border-none
+            bg-background
+            px-5
+            shadow-none
+            focus-visible:ring-0
+            focus-visible:ring-offset-0
+          "
+        />
 
         <Button
           onClick={handleSubmit}
@@ -63,12 +60,12 @@ export const MessageInput = ({ onSendMessage, isLoading }: MessageInputProps) =>
           size="icon"
           className="h-12 w-12 rounded-full"
         >
-          {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
+          {isLoading ? (
+            <Loader2 className="h-5 w-5 animate-spin" />
+          ) : (
+            <Send className="h-5 w-5" />
+          )}
         </Button>
-      </div>
-
-      <div className="mt-2 text-center text-muted-foreground text-xs">
-        Press Enter to send, Shift+Enter for new line
       </div>
     </div>
   );
