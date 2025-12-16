@@ -24,7 +24,7 @@ export const MessageBubble = ({ message }: MessageBubbleProps) => {
           </div>
 
           <div
-            className={`rounded-2xl ${isUser ? 'px-4':''}  py-2 ${
+            className={`rounded-2xl ${isUser ? 'px-4  py-2':''}  ${
               isUser
                 ? "rounded-br-none bg-primary text-primary-foreground"
                 : "rounded-bl-md  text-muted-foreground"
