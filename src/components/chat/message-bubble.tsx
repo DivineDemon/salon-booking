@@ -1,4 +1,4 @@
-import { formatTimestamp, getMessageSenderAvatar, getMessageSenderName } from "../../lib/chat-helpers";
+import { formatTimestamp, getMessageSenderName } from "../../lib/chat-helpers";
 
 interface MessageBubbleProps {
   message: ChatMessage;

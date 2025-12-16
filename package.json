@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "lint": "biome check --write --unsafe ."
+    "lint": "biome check --write --unsafe .",
+    "typecheck": "tsc -b --noEmit"
   },
   "dependencies": {
     "@radix-ui/react-dropdown-menu": "^2.1.16",
