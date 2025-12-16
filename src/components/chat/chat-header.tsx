@@ -9,7 +9,7 @@ interface ChatHeaderProps {
 
 export const ChatHeader = ({ isConnected, onClearChat, onTestConnection }: ChatHeaderProps) => {
   return (
-    <div className="border-b bg-gradient-to-b from-gray-800 to-green-300 p-4 text-primary-foreground">
+    <div className="border-b bg-gradient-to-b from-gray-800 to-green-300 p-4 text-primary-foreground rounded-xl">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-foreground/20">

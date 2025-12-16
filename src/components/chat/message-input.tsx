@@ -33,7 +33,7 @@ export const MessageInput = ({ onSendMessage, isLoading }: MessageInputProps) =>
   };
 
   return (
-    <div className="bg-muted px-4 py-3">
+    <div className="bg-muted px-4 py-3 rounded-lg">
       <div className="flex items-center gap-3">
         <Input
           ref={inputRef}
