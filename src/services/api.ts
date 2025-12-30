@@ -37,16 +37,25 @@ export class ChatAPI {
         const errorText = await response.text();
         throw new Error(`HTTP error! status: ${response.status}, response: ${errorText}`);
       }
-
+      console.log(response);
+      
       const responseText = await response.text();
-
+      console.log(responseText);
+      
       if (!responseText.trim()) {
         throw new Error("Empty response from server");
       }
 
       try {
         const result = JSON.parse(responseText);
-
+        
+        console.log(result.response);
+        if (result.response) {
+          return {output: {
+    is_pass_next: true,
+    message: result.response,
+  }};  
+        }
         if (Array.isArray(result) && result.length > 0) {
           const firstItem = result[0];
           if (firstItem.output && typeof firstItem.output.message === "string") {
